@@ -15,6 +15,10 @@ const serviceroutes=require("./routes/ServiceRoutes");
 app.use("/api/services",serviceroutes);
 const authRoutes=require("./routes/authRoutes");
 app.use("/api/auth",authRoutes);
+
+const bookingRoutes=require("./routes/bookingRoutes");
+app.use("/api/bookings",bookingRoutes);
+
 const PORT=process.env.PORT || 5000;
 app.listen(PORT,()=>{
     console.log(`server running on port ${PORT}`);

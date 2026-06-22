@@ -18,6 +18,10 @@ const userSchema=new mongoose.Schema(
             type:String,
             enum:["customer","provider","admin"],
             default:"customer"
+        },
+        serviceType:{
+            type:String,
+           
         }
     },
     {

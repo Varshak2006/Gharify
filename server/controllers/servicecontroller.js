@@ -21,4 +21,20 @@ const getAllServices=async(req,res)=>{
         });
     }
 };
-module.exports={createService,getAllServices};
+const getservicebyId=async(req,res)=>{
+    try{
+        const service=await Service.findById(req.params.id);
+        if(!service){
+            return res.status(404).json({
+                message:"Service not found"
+            });
+        }
+        res.status(200).json(service);
+    }
+    catch(error){
+        res.status(500).json({
+            message:error.message
+        });
+    }
+};
+module.exports={createService,getAllServices,getservicebyId};
