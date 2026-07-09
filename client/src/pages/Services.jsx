@@ -1,0 +1,393 @@
+import { useEffect, useState } from "react";
+import "./Services.css"
+import API from "../services/api";
+
+const serviceImages = {
+  "Home Tutor": "/images/tutor.jpg",
+  "Cleaning": "/images/cleaning.jpg",
+  "Cook": "/images/cook.jpg",
+  "Baby Sitter": "/images/babysitter.jpg",
+  "Care Taker": "/images/caretaker.jpg",
+  "Plumber": "/images/plumber.jpg",
+  "Mechanic": "/images/mechanic.jpg",
+  "Electrician": "/images/electrician.jpg",
+  "Painter": "/images/painter.jpg",
+  "Helper": "/images/helper.jpg",
+  "Laundry": "/images/laundry.jpg",
+  "Pest Control": "/images/pestcontrol.jpg"
+
+};  export default function Services(){
+    const [search, setSearch] = useState("");
+    const [selectedService,setSelectedService]=useState(null);
+    const [ratings, setRatings] = useState({});
+    const [providers, setProviders] = useState({});
+    const [bookingForm, setBookingForm] = useState({
+  bookingDate: "",
+  bookingTime: "",
+  houseNo: "",
+  street:"",
+  city:"",
+  pincode:""
+});
+
+
+
+
+    const [services,setServices]=useState([]);
+    useEffect(() => {
+
+    fetchServices();
+
+    fetchRatings();
+
+}, []);
+    const fetchServices=async ()=>{
+        try{
+            const res=await API.get("/services");
+            setServices(res.data);
+
+        }catch(error){
+            console.log(error);
+        }
+    };
+    const fetchRatings = async () => {
+
+  try {
+
+    const providerRes = await API.get(
+      "/auth/all-users-public"
+    );
+
+    const providers = providerRes.data.filter(
+      (user) => user.role === "provider"
+    );
+
+    const ratingsData = {};
+const providersData = {};
+    for (const provider of providers) {
+ if(!provider.serviceType) continue;
+      const res = await API.get(`/reviews/provider/${provider._id}/rating`);
+
+      ratingsData[provider.serviceType] = {
+        averageRating: res.data.averageRating,
+        totalReviews: res.data.totalReviews,
+        providerName:provider.name
+      };
+     
+
+providersData[provider.serviceType] = provider;
+
+    }
+
+    setRatings(ratingsData);
+    setProviders(providersData);
+    console.log("Providers Data:", providersData);
+console.log(ratingsData);
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+const handleBook = async (serviceId) => {
+
+  try {
+
+    if (
+      !bookingForm.bookingDate ||
+      !bookingForm.bookingTime ||
+      !bookingForm.houseNo ||
+      !bookingForm.street ||
+      !bookingForm.city ||
+      !bookingForm.pincode
+    ) {
+      return alert("Please fill all booking details.");
+    }
+
+    const token = localStorage.getItem("token");
+
+    const fullAddress =
+      `${bookingForm.houseNo}, ${bookingForm.street}, ${bookingForm.city} - ${bookingForm.pincode}`;
+
+    const bookingDateTime =
+      `${bookingForm.bookingDate}T${bookingForm.bookingTime}`;
+
+    const res = await API.post(
+      "/bookings",
+      {
+        serviceId,
+        bookingDate: bookingDateTime,
+        address: fullAddress
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    alert(res.data.message);
+
+    setSelectedService(null);
+
+    setBookingForm({
+      bookingDate: "",
+      bookingTime: "",
+      houseNo: "",
+      street: "",
+      city: "",
+      pincode: ""
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Booking Failed"
+    );
+
+  }
+
+};
+    const filteredServices = services.filter((service) =>
+  service.serviceName
+    .toLowerCase()
+    .includes(search.toLowerCase())
+);
+ return(
+    <div>
+
+        <h1>Available Services</h1>
+      <input
+  type="text"
+  placeholder="Search service..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="search-box"
+/>  
+<div  className="services-container">
+        {filteredServices.map((service)=>(
+            <div
+  key={service._id}
+  className="service-card"
+>
+  <img
+    src={serviceImages[service.serviceName]}
+    alt={service.serviceName}
+  />
+
+  <div className="card-content">
+    <h3>{service.serviceName}</h3>
+
+    <p>{service.description}</p>
+
+    <p>
+      <strong>₹{service.price}</strong>
+    </p>
+{ratings[service.serviceName] && (
+
+<div className="rating-box">
+
+<p>
+
+⭐ {ratings[service.serviceName].averageRating}
+
+({ratings[service.serviceName].totalReviews} Reviews)
+
+</p>
+
+<p>
+
+👨‍🔧 {ratings[service.serviceName].providerName}
+
+</p>
+
+</div>
+
+)}
+    <p>{service.category}</p>
+
+    <button
+      className="book-btn"
+      onClick={() => setSelectedService(service)}   >
+      Book Now
+    </button>
+  </div>
+</div>
+        ))}
+        </div>
+        {selectedService && (
+  <div className="modal-overlay">
+
+    <div className="booking-modal">
+
+      <h2>Book {selectedService.serviceName}</h2>
+{providers[selectedService.serviceName] && (
+
+<div className="provider-card">
+
+
+<img
+  src={
+    providers[selectedService.serviceName].profileImage
+      ? `http://localhost:5000${providers[selectedService.serviceName].profileImage}`
+      : "/images/default-user.png"
+  }
+  alt="Provider"
+  style={{
+    width: "90px",
+    height: "90px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    marginBottom: "15px",
+    border: "3px solid #2563eb"
+  }}
+/>
+<h3>👨‍🔧 Assigned Professional</h3>
+<p>
+<strong>Name:</strong>
+{" "}
+{providers[selectedService.serviceName].name}
+</p>
+
+<p>
+<strong>Phone:</strong>
+{" "}
+{providers[selectedService.serviceName].phone}
+</p>
+
+<p>
+<strong>City:</strong>
+{" "}
+{providers[selectedService.serviceName].city}
+</p>
+
+<p>
+<strong>Experience:</strong>
+{" "}
+{providers[selectedService.serviceName].experience}
+</p>
+
+<p>
+
+⭐ {ratings[selectedService.serviceName]?.averageRating}
+
+({ratings[selectedService.serviceName]?.totalReviews} Reviews)
+
+</p>
+
+</div>
+
+)}
+      <input
+        type="date"
+        value={bookingForm.bookingDate}
+        onChange={(e) =>
+          setBookingForm({
+            ...bookingForm,
+            bookingDate: e.target.value
+          })
+        }
+      />
+
+      <input
+        type="time"
+        value={bookingForm.bookingTime}
+        onChange={(e) =>
+          setBookingForm({
+            ...bookingForm,
+            bookingTime: e.target.value
+          })
+        }
+      />
+
+     <input
+  type="text"
+  placeholder="🏠 House No."
+  value={bookingForm.houseNo}
+  onChange={(e)=>
+    setBookingForm({
+      ...bookingForm,
+      houseNo:e.target.value
+    })
+  }
+/>
+
+<input
+  type="text"
+  placeholder="🛣 Street"
+  value={bookingForm.street}
+  onChange={(e)=>
+    setBookingForm({
+      ...bookingForm,
+      street:e.target.value
+    })
+  }
+/>
+
+<input
+  type="text"
+  placeholder="🏙 City"
+  value={bookingForm.city}
+  onChange={(e)=>
+    setBookingForm({
+      ...bookingForm,
+      city:e.target.value
+    })
+  }
+/>
+
+<input
+  type="text"
+  placeholder="📮 Pincode"
+  value={bookingForm.pincode}
+  onChange={(e)=>
+    setBookingForm({
+      ...bookingForm,
+      pincode:e.target.value
+    })
+  }
+/>
+<hr />
+
+<div className="booking-summary">
+
+    <h3>Booking Summary</h3>
+
+    <p>
+        <strong>Service:</strong>
+        {selectedService.serviceName}
+    </p>
+
+    <p>
+        <strong>Price:</strong>
+        ₹{selectedService.price}
+    </p>
+
+</div>
+
+<hr />
+      <button
+        className="book-btn"
+        onClick={() => handleBook(selectedService._id)}
+      >
+        Confirm Booking
+      </button>
+
+      <button
+        className="cancel-btn"
+        onClick={() => setSelectedService(null)}
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+)}
+        </div>
+ );
+}

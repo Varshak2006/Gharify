@@ -4,12 +4,16 @@ const protect=require("../middleware/authMiddleware");
 // router.get("/",(req,res)=>{
 //     res.send("Auth Route Working");
 // });
-const {registerUser,loginUser}=require("../controllers/authcontroller");
+const {registerUser,loginUser,getAllUsers,getPublicUsers}=require("../controllers/authcontroller");
 //const protect = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
 router.post("/register",registerUser);
 router.post("/login",loginUser);
+router.get(
+    "/all-users-public",
+    getPublicUsers
+);
 router.get("/profile",protect,(req,res)=>{
     res.json({
         message:"protected route accessed",
@@ -25,6 +29,12 @@ router.get(
             message: "Welcome Admin"
         });
     }
+);
+router.get(
+    "/users",
+    protect,
+    authorizeRoles("admin"),
+    getAllUsers
 );
 router.get(
     "/provider",

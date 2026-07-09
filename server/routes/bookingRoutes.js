@@ -1,8 +1,12 @@
 const express=require("express");
 const router=express.Router();
-const{createBooking,getmybookings,getAllBookings,acceptBooking,getMyJobs,completeBooking}=require("../controllers/bookingcontroller");
+const{createBooking,getmybookings,getAllBookings,acceptBooking,getMyJobs,completeBooking,getAvailableJobs,cancelBooking,getPublicBookingCount, updateTrackingStatus}=require("../controllers/bookingcontroller");
 const protect=require("../middleware/authMiddleware");
 const authorizeRoles=require("../middleware/rolemiddleware");
+router.get(
+    "/public-count",
+    getPublicBookingCount
+);
 router.post(
     "/",
     protect,
@@ -38,5 +42,23 @@ router.patch(
     protect,
     authorizeRoles("provider"),
     completeBooking
+);
+router.get(
+    "/available-jobs",
+    protect,
+    authorizeRoles("provider"),
+    getAvailableJobs
+);
+router.patch(
+    "/:id/cancel",
+    protect,
+    authorizeRoles("customer"),
+    cancelBooking
+);
+router.patch(
+    "/:id/tracking",
+    protect,
+    authorizeRoles("provider"),
+    updateTrackingStatus
 );
 module.exports=router;

@@ -29,7 +29,18 @@ const bookingSchema=new mongoose.Schema(
                 "pending","accepted","completed","cancelled"
             ],
             default:"pending"
-        }
+        },
+       trackingStatus: {
+    type: String,
+    enum: [
+        "confirmed",
+        "on_the_way",
+        "arrived",
+        "started",
+        "completed"
+    ],
+    default: "confirmed"
+}, 
     },
     {
         timestamps:true

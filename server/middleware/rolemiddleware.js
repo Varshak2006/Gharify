@@ -1,12 +1,29 @@
-const authorizeRoles=(...roles)=>{
-    return(req,res,next)=>{
-        if(!roles.includes(req.user.role)){
+// const authorizeRoles=(...roles)=>{
+//     return(req,res,next)=>{
+//         if(!roles.includes(req.user.role)){
+//             return res.status(403).json({
+//                 message:"Access denied!"
+//             });
+//         }
+//         next();
+//     };
+
+// };
+// module.exports=authorizeRoles;
+const authorizeRoles = (...roles) => {
+    return (req, res, next) => {
+
+        console.log("Allowed Roles:", roles);
+        console.log("User Role:", req.user.role);
+
+        if (!roles.includes(req.user.role)) {
             return res.status(403).json({
-                message:"Access denied!"
+                message: "Access denied!"
             });
         }
+
         next();
     };
-
 };
-module.exports=authorizeRoles;
+
+module.exports = authorizeRoles;

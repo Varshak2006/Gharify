@@ -1,0 +1,296 @@
+.services-container{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:25px;
+    padding:30px;
+}
+
+.service-card{
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    transition:0.3s;
+    display:flex;
+    flex-direction:column;
+}
+
+.service-card:hover{
+    transform:translateY(-6px);
+}
+
+.service-card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.card-content{
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+}
+
+.card-content h3{
+    margin-bottom:10px;
+    color:#2563eb;
+}
+
+.card-content p{
+    margin:6px 0;
+    color:#555;
+}
+
+.book-btn{
+    width:100%;
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:auto;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.book-btn:hover{
+    background:#1d4ed8;
+}
+
+h1{
+    text-align:center;
+    margin:30px 0;
+    font-size:40px;
+}
+
+.search-box{
+    display:block;
+    width:50%;
+    margin:20px auto;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid gray;
+    font-size:16px;
+}
+
+/* ============================= */
+/* Responsive */
+/* ============================= */
+
+@media (max-width:1024px){
+
+    .services-container{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .search-box{
+        width:70%;
+    }
+
+}
+
+@media (max-width:768px){
+
+    h1{
+        font-size:32px;
+    }
+
+    .services-container{
+        grid-template-columns:1fr;
+        padding:20px;
+    }
+
+    .search-box{
+        width:90%;
+    }
+
+    .service-card img{
+        height:250px;
+    }
+
+}
+
+@media (max-width:480px){
+
+    h1{
+        font-size:28px;
+    }
+
+    .service-card img{
+        height:200px;
+    }
+
+    .card-content{
+        padding:15px;
+    }
+
+    .book-btn{
+        padding:10px;
+    }
+
+}
+/* ===== Booking Modal ===== */
+
+.modal-overlay{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+.booking-modal{
+    width: 500px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.rating-box{
+
+background:#f8fafc;
+
+padding:10px;
+
+margin:12px 0;
+
+border-radius:8px;
+font-size: larger;
+border:1px solid #e5e7eb;
+
+}
+
+.rating-box p{
+
+margin:4px 0;
+color: white;
+font-size:15px;
+
+}
+.provider-image{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #2563eb;
+    margin-bottom:15px;
+}
+.provider-card{
+    background:#f8fafc;
+    border:1px solid #dbeafe;
+    border-radius:12px;
+    padding:18px;
+    
+    margin-bottom:20px;
+}
+
+.provider-card h3{
+    margin-bottom:12px;
+    color:#2563eb;
+
+}
+
+.provider-card p{
+    margin:6px 0;
+    
+}
+@keyframes popup{
+
+    from{
+        transform:scale(.8);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
+.booking-modal h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#2563eb;
+}
+
+.booking-modal input,
+.booking-modal textarea{
+
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:16px;
+    box-sizing:border-box;
+    outline:none;
+
+}
+
+.booking-modal input:focus,
+.booking-modal textarea:focus{
+
+    border:2px solid #2563eb;
+
+}
+
+.booking-modal textarea{
+
+    resize:none;
+    height:90px;
+
+}
+
+.booking-modal .book-btn{
+
+    width:100%;
+    margin-bottom:10px;
+
+}
+
+.booking-modal .cancel-btn{
+
+    width:100%;
+    background:#ef4444;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+
+}
+
+.booking-modal .cancel-btn:hover{
+
+    background:#dc2626;
+
+}
+.booking-summary{
+    background:#f8fafc;
+    padding:15px;
+    border-radius:10px;
+    margin:15px 0;
+}
+
+.booking-summary h3{
+    margin-bottom:10px;
+    color:#2563eb;
+}
+
+.booking-summary p{
+    margin:6px 0;
+    font-size:16px;
+}

@@ -4,7 +4,21 @@ const jwt=require("jsonwebtoken");
 
 const registerUser=async(req,res)=>{
     try{
-        const{name,email,password,role,serviceType}=req.body;
+        const{name,
+            email,
+            password,
+            role,
+            serviceType,
+            phone,
+            city,
+            experience,
+            profileImage}=req.body;
+        if(role=="admin"){
+            return res.status(403).json({
+                message:"Admin registeration not allowed"
+            });
+        }
+        
         const userExists=await User.findOne({email});
         if(userExists){
             return res.status(400).json({
@@ -18,17 +32,30 @@ const registerUser=async(req,res)=>{
             email,
             password:hashedpassword,
             role,
-            serviceType
+            serviceType,
+            phone,
+            city,
+            experience,
+            profileImage
         });
         res.status(201).json({
-            message:"user registered sucessfully"
-        
+            message:"user registered sucessfully"   
         });
     }
     catch(error){
         res.status(500).json({
             message:error.message
         });
+    }
+};
+const getAllUsers=async(req,res)=>{
+    try{
+        const users=await User.find().select("-password");
+        res.status(200).json(users);
+    }catch(error){
+res.status(500).json({
+    message:error.message
+});
     }
 };
 const loginUser=async (req,res)=>{
@@ -61,7 +88,10 @@ const loginUser=async (req,res)=>{
         );
         res.status(200).json({
             message:"Login Successful",
-            token
+            token,
+            role:user.role,
+            name:user.name,
+            userId: user._id
         });
     }
     catch(error){
@@ -70,4 +100,22 @@ const loginUser=async (req,res)=>{
         });
     }
 };
-module.exports={registerUser,loginUser};
+const getPublicUsers = async (req, res) => {
+    try {
+
+        const users = await User.find(
+            {},
+            "name role serviceType phone city experience profileImage"
+        );
+
+        res.status(200).json(users);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+};
+module.exports={registerUser,loginUser,getAllUsers,getPublicUsers};

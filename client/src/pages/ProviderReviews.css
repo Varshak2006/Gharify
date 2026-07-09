@@ -1,0 +1,29 @@
+.reviews-container{
+    max-width:800px;
+    margin:40px auto;
+}
+
+.rating-box{
+    background:#2563eb;
+    color:white;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.review-card{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.review-card h3{
+    color:#f59e0b;
+}
+
+.review-card p{
+    margin:12px 0;
+}
