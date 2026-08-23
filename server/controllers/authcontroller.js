@@ -5,8 +5,8 @@ const jwt=require("jsonwebtoken");
 const registerUser=async(req,res)=>{
     try{
         const{name,
-            email,
-            password,
+              email,
+              password,
             role,
             serviceType,
             phone,

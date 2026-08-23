@@ -1,10 +1,7 @@
 const express=require("express");
 const router=express.Router();
 const upload=require("../middleware/uploadMiddleware");
-router.post(
-    "/",
-    upload.single("image"),
-    (req,res)=>{
+router.post("/",upload.single("image"),(req,res)=>{
         res.json({
             imageUrl:`/uploads/${req.file.filename}`
         });

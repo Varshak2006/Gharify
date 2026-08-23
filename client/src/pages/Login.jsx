@@ -21,15 +21,16 @@ const handleSubmit=async(e)=>{
             "/auth/login",
             formData
         );
-        localStorage.setItem(
-            "token",
-            res.data.token
-        );
-        alert("login successful");
+        // localStorage.setItem(
+        //     "token",
+        //     res.data.token
+        // );
         localStorage.setItem("token",res.data.token);
         localStorage.setItem("role",res.data.role);
         localStorage.setItem("name",res.data.name);
         localStorage.setItem("userId", res.data.userId);
+        alert("login successful");
+
         if(res.data.role==="customer"){
             navigate("/customer-dashboard");
         }

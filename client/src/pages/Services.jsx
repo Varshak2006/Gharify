@@ -21,6 +21,8 @@ const serviceImages = {
     const [selectedService,setSelectedService]=useState(null);
     const [ratings, setRatings] = useState({});
     const [providers, setProviders] = useState({});
+    const [selectedProvider, setSelectedProvider] = useState(null);
+
     const [bookingForm, setBookingForm] = useState({
   bookingDate: "",
   bookingTime: "",
@@ -29,9 +31,6 @@ const serviceImages = {
   city:"",
   pincode:""
 });
-
-
-
 
     const [services,setServices]=useState([]);
     useEffect(() => {
@@ -50,7 +49,72 @@ const serviceImages = {
             console.log(error);
         }
     };
-    const fetchRatings = async () => {
+//     const fetchRatings = async () => {
+
+//   try {
+
+//     const providerRes = await API.get(
+//       "/auth/all-users-public"
+//     );
+
+//     const providers = providerRes.data.filter(
+//       (user) => user.role === "provider"
+//     );
+
+// //     const ratingsData = {};
+// // const providersData = {};
+// //     for (const provider of providers) {
+// //  if(!provider.serviceType) continue;
+// //       const res = await API.get(`/reviews/provider/${provider._id}/rating`);
+
+// //       ratingsData[provider.serviceType] = {
+// //         averageRating: res.data.averageRating,
+// //         totalReviews: res.data.totalReviews,
+// //         providerName:provider.name
+// //       };
+// // providersData[provider.serviceType] = provider;
+
+//   //  }
+// const providersData = {};
+// const ratingsData = {};
+
+// for (const provider of providers) {
+
+//   if (!provider.serviceType) continue;
+
+//   const res = await API.get(
+//     `/reviews/provider/${provider._id}/rating`
+//   );
+
+//   if (!providersData[provider.serviceType]) {
+//     providersData[provider.serviceType] = [];
+//   }
+
+//   providersData[provider.serviceType].push({
+//     ...provider,
+//     averageRating: res.data.averageRating,
+//     totalReviews: res.data.totalReviews
+//   });
+
+// }
+
+// setRatings(ratingsData);
+// setProviders(providersData);
+
+// console.log("Providers Data:", providersData);
+
+//     setRatings(ratingsData);
+//     setProviders(providersData);
+//     console.log("Providers Data:", providersData);
+// console.log(ratingsData);
+//   } catch (error) {
+
+//     console.log(error);
+
+//   }
+
+// };
+const fetchRatings = async () => {
 
   try {
 
@@ -62,27 +126,35 @@ const serviceImages = {
       (user) => user.role === "provider"
     );
 
-    const ratingsData = {};
-const providersData = {};
+    const providersData = {};
+
     for (const provider of providers) {
- if(!provider.serviceType) continue;
-      const res = await API.get(`/reviews/provider/${provider._id}/rating`);
 
-      ratingsData[provider.serviceType] = {
+      if (!provider.serviceType) continue;
+
+      const res = await API.get(
+        `/reviews/provider/${provider._id}/rating`
+      );
+
+      if (!providersData[provider.serviceType]) {
+        providersData[provider.serviceType] = [];
+      }
+
+      providersData[provider.serviceType].push({
+        ...provider,
         averageRating: res.data.averageRating,
-        totalReviews: res.data.totalReviews,
-        providerName:provider.name
-      };
-     
-
-providersData[provider.serviceType] = provider;
+        totalReviews: res.data.totalReviews
+      });
 
     }
 
-    setRatings(ratingsData);
     setProviders(providersData);
-    console.log("Providers Data:", providersData);
-console.log(ratingsData);
+
+    console.log(
+      "Providers Data:",
+      providersData
+    );
+
   } catch (error) {
 
     console.log(error);
@@ -114,12 +186,13 @@ const handleBook = async (serviceId) => {
       `${bookingForm.bookingDate}T${bookingForm.bookingTime}`;
 
     const res = await API.post(
-      "/bookings",
-      {
-        serviceId,
-        bookingDate: bookingDateTime,
-        address: fullAddress
-      },
+  "/bookings",
+  {
+    serviceId,
+    bookingDate: bookingDateTime,
+    address: fullAddress,
+    providerId: selectedProvider?._id
+  },
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -130,7 +203,7 @@ const handleBook = async (serviceId) => {
     alert(res.data.message);
 
     setSelectedService(null);
-
+setSelectedProvider(null);
     setBookingForm({
       bookingDate: "",
       bookingTime: "",
@@ -225,7 +298,7 @@ const handleBook = async (serviceId) => {
     <div className="booking-modal">
 
       <h2>Book {selectedService.serviceName}</h2>
-{providers[selectedService.serviceName] && (
+{/* {providers[selectedService.serviceName] && (
 
 <div className="provider-card">
 
@@ -279,9 +352,97 @@ const handleBook = async (serviceId) => {
 
 </p>
 
-</div>
+</div> */}
+{providers[selectedService.serviceName]?.length > 0 && (
+
+  <div className="providers-section">
+
+    <h3>👨‍🔧 Available Professionals</h3>
+
+    {providers[selectedService.serviceName].map((provider) => (
+
+      <div
+        key={provider._id}
+        className={`provider-card ${
+          selectedProvider?._id === provider._id
+            ? "selected-provider"
+            : ""
+        }`}
+      >
+
+        <img
+          src={
+            provider.profileImage
+              ? `http://localhost:5000${provider.profileImage}`
+              : "/images/default-user.png"
+          }
+          alt={provider.name}
+          style={{
+            width: "90px",
+            height: "90px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            marginBottom: "15px",
+            border: "3px solid #2563eb"
+          }}
+        />
+
+        <h3>{provider.name}</h3>
+
+        <p>
+          ⭐ {provider.averageRating || 0}
+          {" "}
+          ({provider.totalReviews || 0} Reviews)
+        </p>
+
+        <p>
+          <strong>Phone:</strong>{" "}
+          {provider.phone || "Not provided"}
+        </p>
+
+        <p>
+          <strong>City:</strong>{" "}
+          {provider.city || "Not provided"}
+        </p>
+
+        <p>
+          <strong>Experience:</strong>{" "}
+          {provider.experience || "Not provided"}
+        </p>
+
+        <button
+          type="button"
+          className="book-btn"
+          onClick={() => setSelectedProvider(provider)}
+        >
+          Choose {provider.name}
+        </button>
+
+      </div>
+
+    ))}
+
+  </div>
 
 )}
+<div className="auto-assignment-option">
+
+  <button
+    type="button"
+    className="auto-select-btn"
+    onClick={() => setSelectedProvider(null)}
+  >
+    🤖 Let Gharify choose for me
+  </button>
+
+  {selectedProvider && (
+    <p>
+      Selected Provider:{" "}
+      <strong>{selectedProvider.name}</strong>
+    </p>
+  )}
+
+</div>
       <input
         type="date"
         value={bookingForm.bookingDate}

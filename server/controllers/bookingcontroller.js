@@ -3,82 +3,145 @@ const User=require("../models/User");
 const Service=require("../models/Services");
 const createBooking = async (req, res) => {
     try {
-
         console.log("BODY:", req.body);
-
-        const service = await Service.findById(req.body.serviceId);
-
+        const { serviceId, bookingDate, address, providerId } = req.body;
+const service = await Service.findById(serviceId);
         console.log("SERVICE:", service);
-
         if (!service) {
             return res.status(404).json({
                 message: "Service not found"
             });
         }
+// const providers = await User.find({
+//     role: "provider",
+//     serviceType: service.serviceName
+//     });
+//     if (providers.length === 0) {
+//     return res.status(404).json({
+//         message: "No provider available."
+//     });
+//     }
+//         // console.log("PROVIDER:", provider);
 
-        // const provider = await User.findOne({
-        //     role: "provider",
-        //     serviceType: service.serviceName
-        // });
-const providers = await User.find({
-    role: "provider",
-    serviceType: service.serviceName
-});
+//         // if (!provider) {
+//         //     return res.status(404).json({
+//         //         message: "No provider available for this service."
+//         //     });
+//         // }
+// const bookingTime = new Date(req.body.bookingDate);
+//     let selectedProvider = null;
+//     for (const provider of providers) {
+//     const existingBooking = await Booking.findOne({
+//          providerId: provider._id,
+//         //providerId: selectedProvider._id,
+//         bookingDate: bookingTime,
+//         status: {
+//             $in: ["pending", "accepted"]
+//         }
+//     });
+//     if (!existingBooking) {
+//         selectedProvider = provider;
+//         break;
+//     }
+//     }
+//     if (!selectedProvider) {
+//     return res.status(400).json({
+//         message: "No provider available at this time. Please choose another slot."
+//     });
+//     }
+const bookingTime = new Date(bookingDate);
 
-if (providers.length === 0) {
-    return res.status(404).json({
-        message: "No provider available."
-    });
-}
-        // console.log("PROVIDER:", provider);
-
-        // if (!provider) {
-        //     return res.status(404).json({
-        //         message: "No provider available for this service."
-        //     });
-        // }
-const bookingTime = new Date(req.body.bookingDate);
 let selectedProvider = null;
 
-for (const provider of providers) {
+/*
+    CUSTOMER SELECTED A PROVIDER
+*/
+if (providerId) {
+
+    selectedProvider = await User.findOne({
+        _id: providerId,
+        role: "provider",
+        serviceType: service.serviceName
+    });
+
+    if (!selectedProvider) {
+        return res.status(404).json({
+            message: "Selected provider is not available for this service."
+        });
+    }
 
     const existingBooking = await Booking.findOne({
-         providerId: provider._id,
-        //providerId: selectedProvider._id,
+        providerId: selectedProvider._id,
         bookingDate: bookingTime,
         status: {
             $in: ["pending", "accepted"]
         }
     });
 
-    if (!existingBooking) {
-        selectedProvider = provider;
-        break;
+    if (existingBooking) {
+        return res.status(400).json({
+            message: "Selected provider is already booked for this time."
+        });
     }
-}
-if (!selectedProvider) {
-    return res.status(400).json({
-        message: "No provider available at this time. Please choose another slot."
-    });
+
 }
 
-        const booking = await Booking.create({
+/*
+    CUSTOMER CHOSE:
+    LET GHARIFY CHOOSE
+*/
+else {
+
+    const providers = await User.find({
+        role: "provider",
+        serviceType: service.serviceName
+    });
+
+    if (providers.length === 0) {
+        return res.status(404).json({
+            message: "No provider available."
+        });
+    }
+
+    for (const provider of providers) {
+
+        const existingBooking = await Booking.findOne({
+            providerId: provider._id,
+            bookingDate: bookingTime,
+            status: {
+                $in: ["pending", "accepted"]
+            }
+        });
+
+        if (!existingBooking) {
+            selectedProvider = provider;
+            break;
+        }
+
+    }
+
+    if (!selectedProvider) {
+        return res.status(400).json({
+            message: "No provider available at this time. Please choose another slot."
+        });
+    }
+
+}
+const booking = await Booking.create({
             customerId: req.user.id,
             // providerId: provider._id,
             providerId: selectedProvider._id,
-            serviceId: req.body.serviceId,
-            bookingDate: req.body.bookingDate,
-            address: req.body.address
+            serviceId: serviceId,
+            bookingDate: bookingDate,
+            address: address
         });
-
         console.log("BOOKING CREATED");
-
         res.status(201).json({
             message: "Booking created successfully",
             booking
         });
 
-    } catch (error) {
+        } catch (error) {
 
         console.log("ERROR OCCURRED:");
         console.log(error);
