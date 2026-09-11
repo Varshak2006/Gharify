@@ -75,7 +75,7 @@ router.post(
 router.get(
     "/provider/:providerId",
     (req, res, next) => {
-        console.log("Reviews route hit:", req.params.providerId);
+        // console.log("Reviews route hit:", req.params.providerId);
         next();
     },
     getProviderReviews
@@ -84,7 +84,7 @@ router.get(
 router.get(
     "/provider/:providerId/rating",
     (req, res, next) => {
-        console.log("Rating route hit:", req.params.providerId);
+        // console.log("Rating route hit:", req.params.providerId);
         next();
     },
     getProviderRating

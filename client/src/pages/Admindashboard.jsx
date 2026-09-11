@@ -249,7 +249,17 @@ return ( <div className="dashboard-container">
             Service:
             {booking.serviceId?.serviceName}
           </p>
+{booking.serviceGroup && booking.subService && (
+  <div className="booking-service-details">
+    <p>
+      🔧 <strong>Type:</strong> {booking.serviceGroup}
+    </p>
 
+    <p>
+      🛠 <strong>Work:</strong> {booking.subService}
+    </p>
+  </div>
+)}
           <p>
             Address:
             {booking.address}

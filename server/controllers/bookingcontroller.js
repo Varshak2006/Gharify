@@ -4,7 +4,15 @@ const Service=require("../models/Services");
 const createBooking = async (req, res) => {
     try {
         console.log("BODY:", req.body);
-        const { serviceId, bookingDate, address, providerId } = req.body;
+        // const { serviceId, bookingDate, address, providerId } = req.body;
+        const {
+    serviceId,
+    bookingDate,
+    address,
+    providerId,
+    serviceGroup,
+    subService
+} = req.body;
 const service = await Service.findById(serviceId);
         console.log("SERVICE:", service);
         if (!service) {
@@ -50,7 +58,31 @@ const service = await Service.findById(serviceId);
 //     });
 //     }
 const bookingTime = new Date(bookingDate);
+let bookingEndTime;
 
+const selectedGroup = service.serviceGroups?.find(
+    group => group.groupName === serviceGroup
+);
+
+const selectedSub = selectedGroup?.subServices?.find(
+    sub => sub.name === subService
+);
+
+if (!selectedSub || !selectedSub.duration) {
+    return res.status(400).json({
+        message: "Please select a valid service type with duration."
+    });
+}
+
+if (selectedSub.durationUnit === "minutes") {
+    bookingEndTime = new Date(
+        bookingTime.getTime() + selectedSub.duration * 60 * 1000
+    );
+} else if (selectedSub.durationUnit === "days") {
+    bookingEndTime = new Date(
+        bookingTime.getTime() + selectedSub.duration * 24 * 60 * 60 * 1000
+    );
+}
 let selectedProvider = null;
 
 /*
@@ -70,13 +102,25 @@ if (providerId) {
         });
     }
 
+    // const existingBooking = await Booking.findOne({
+    //     providerId: selectedProvider._id,
+    //     bookingDate: bookingTime,
+    //     status: {
+    //         $in: ["pending", "accepted"]
+    //     }
+    // });
     const existingBooking = await Booking.findOne({
-        providerId: selectedProvider._id,
-        bookingDate: bookingTime,
-        status: {
-            $in: ["pending", "accepted"]
-        }
-    });
+    providerId: selectedProvider._id,
+    bookingDate: {
+        $lt: bookingEndTime
+    },
+    bookingEndDate: {
+        $gt: bookingTime
+    },
+    status: {
+        $in: ["pending", "accepted"]
+    }
+});
 
     if (existingBooking) {
         return res.status(400).json({
@@ -127,14 +171,24 @@ else {
     }
 
 }
+// const booking = await Booking.create({
+//             customerId: req.user.id,
+//             // providerId: provider._id,
+//             providerId: selectedProvider._id,
+//             serviceId: serviceId,
+//             bookingDate: bookingDate,
+//             address: address
+//         });
 const booking = await Booking.create({
-            customerId: req.user.id,
-            // providerId: provider._id,
-            providerId: selectedProvider._id,
-            serviceId: serviceId,
-            bookingDate: bookingDate,
-            address: address
-        });
+    customerId: req.user.id,
+    providerId: selectedProvider._id,
+    serviceId: serviceId,
+    serviceGroup: serviceGroup,
+    subService: subService,
+    bookingDate: bookingDate,
+    bookingEndDate: bookingEndTime,
+    address: address
+});
         console.log("BOOKING CREATED");
         res.status(201).json({
             message: "Booking created successfully",

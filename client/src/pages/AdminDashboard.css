@@ -85,7 +85,17 @@
     font-size:32px;
 
 }
+.booking-service-details {
+    background: #f8fafc;
+    border-left: 4px solid #2563eb;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
 
+.booking-service-details p {
+    margin: 5px 0;
+}
 .analytics-card p{
 
     margin-top:10px;

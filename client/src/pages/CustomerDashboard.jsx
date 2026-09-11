@@ -201,9 +201,24 @@ setReviews({
               className="booking-card"
             >
 
+              {/* <h4>{booking.serviceId?.serviceName}</h4>
+
+              <hr /> */}
               <h4>{booking.serviceId?.serviceName}</h4>
 
-              <hr />
+{booking.serviceGroup && booking.subService && (
+  <div className="booking-service-details">
+    <p>
+      <strong>🔧 Type:</strong> {booking.serviceGroup}
+    </p>
+
+    <p>
+      <strong>🛠 Work:</strong> {booking.subService}
+    </p>
+  </div>
+)}
+
+<hr />
 
               <h3>👨‍🔧 Assigned Professional</h3>
 

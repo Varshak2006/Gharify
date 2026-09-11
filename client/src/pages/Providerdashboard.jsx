@@ -24,7 +24,7 @@ const token = localStorage.getItem("token");
       }
     }
   );
-
+// console.log("PROVIDER JOBS:", res.data);
   setJobs(res.data);
 
 } catch (error) {
@@ -150,9 +150,21 @@ return ( <div className="dashboard-container">
 
           <h4>{job.serviceId?.serviceName}</h4>
 
-          <p>
-            👤 Customer: {job.customerId?.name}
-          </p>
+{job.serviceGroup && job.subService && (
+  <div className="job-service-details">
+    <p>
+      <strong>🔧 Type:</strong> {job.serviceGroup}
+    </p>
+
+    <p>
+      <strong>🛠 Work:</strong> {job.subService}
+    </p>
+  </div>
+)}
+
+<p>
+  👤 Customer: {job.customerId?.name}
+</p>
 
           <p>
             📍 {job.address}

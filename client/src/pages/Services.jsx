@@ -22,7 +22,8 @@ const serviceImages = {
     const [ratings, setRatings] = useState({});
     const [providers, setProviders] = useState({});
     const [selectedProvider, setSelectedProvider] = useState(null);
-
+const [selectedGroup, setSelectedGroup] = useState(null);
+const [selectedSubService, setSelectedSubService] = useState(null);
     const [bookingForm, setBookingForm] = useState({
   bookingDate: "",
   bookingTime: "",
@@ -176,7 +177,12 @@ const handleBook = async (serviceId) => {
     ) {
       return alert("Please fill all booking details.");
     }
-
+if (
+    selectedService.serviceGroups?.length > 0 &&
+    !selectedSubService
+) {
+    return alert("Please select the type of electrician service.");
+}
     const token = localStorage.getItem("token");
 
     const fullAddress =
@@ -185,14 +191,16 @@ const handleBook = async (serviceId) => {
     const bookingDateTime =
       `${bookingForm.bookingDate}T${bookingForm.bookingTime}`;
 
-    const res = await API.post(
-  "/bookings",
-  {
-    serviceId,
-    bookingDate: bookingDateTime,
-    address: fullAddress,
-    providerId: selectedProvider?._id
-  },
+  const res = await API.post(
+    "/bookings",
+    {
+        serviceId,
+        bookingDate: bookingDateTime,
+        address: fullAddress,
+        providerId: selectedProvider?._id,
+        serviceGroup: selectedGroup?.groupName,
+        subService: selectedSubService
+    },
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -204,7 +212,10 @@ const handleBook = async (serviceId) => {
 
     setSelectedService(null);
 setSelectedProvider(null);
-    setBookingForm({
+setSelectedGroup(null);
+setSelectedSubService(null);
+
+setBookingForm({
       bookingDate: "",
       bookingTime: "",
       houseNo: "",
@@ -298,61 +309,69 @@ setSelectedProvider(null);
     <div className="booking-modal">
 
       <h2>Book {selectedService.serviceName}</h2>
-{/* {providers[selectedService.serviceName] && (
+{selectedService.serviceGroups?.length > 0 && (
+  <div className="service-selection">
 
-<div className="provider-card">
+    <h3>Choose Service Type</h3>
 
+    <div className="group-buttons">
 
-<img
-  src={
-    providers[selectedService.serviceName].profileImage
-      ? `http://localhost:5000${providers[selectedService.serviceName].profileImage}`
-      : "/images/default-user.png"
-  }
-  alt="Provider"
-  style={{
-    width: "90px",
-    height: "90px",
-    borderRadius: "50%",
-    objectFit: "cover",
-    marginBottom: "15px",
-    border: "3px solid #2563eb"
-  }}
-/>
-<h3>👨‍🔧 Assigned Professional</h3>
-<p>
-<strong>Name:</strong>
-{" "}
-{providers[selectedService.serviceName].name}
-</p>
+      {selectedService.serviceGroups.map((group) => (
 
-<p>
-<strong>Phone:</strong>
-{" "}
-{providers[selectedService.serviceName].phone}
-</p>
+        <button
+          key={group.groupName}
+          type="button"
+          // className="group-btn"
+          className={`group-btn ${
+  selectedGroup?.groupName === group.groupName
+    ? "selected-group-btn"
+    : ""
+}`}
+          onClick={() => {
+            setSelectedGroup(group);
+            setSelectedSubService(null);
+          }}
+        >
+          {group.groupName === "Household" ? "🏠" : "🏢"}
+          {" "}
+          {group.groupName}
+        </button>
 
-<p>
-<strong>City:</strong>
-{" "}
-{providers[selectedService.serviceName].city}
-</p>
+      ))}
 
-<p>
-<strong>Experience:</strong>
-{" "}
-{providers[selectedService.serviceName].experience}
-</p>
+    </div>
 
-<p>
+  </div>
+)}
+{selectedGroup && (
+  <div className="subservice-selection">
 
-⭐ {ratings[selectedService.serviceName]?.averageRating}
+    <h3>{selectedGroup.groupName} Services</h3>
 
-({ratings[selectedService.serviceName]?.totalReviews} Reviews)
+    <div className="subservice-buttons">
 
-</p>
+      {selectedGroup.subServices.map((subService) => (
 
-</div> */}
+        <button
+          key={subService.name}
+          type="button"
+          // className="subservice-btn"
+          className={`subservice-btn ${
+  selectedSubService === subService.name
+    ? "selected-subservice-btn"
+    : ""
+}`}
+          onClick={() => setSelectedSubService(subService.name)}
+        >
+          {subService.name}
+        </button>
+
+      ))}
+
+    </div>
+
+  </div>
+)}
 {providers[selectedService.serviceName]?.length > 0 && (
 
   <div className="providers-section">
@@ -514,7 +533,7 @@ setSelectedProvider(null);
 />
 <hr />
 
-<div className="booking-summary">
+{/* <div className="booking-summary">
 
     <h3>Booking Summary</h3>
 
@@ -528,8 +547,73 @@ setSelectedProvider(null);
         ₹{selectedService.price}
     </p>
 
-</div>
+</div> */}
+<div className="booking-summary">
 
+    <h3>Booking Summary</h3>
+
+    <p>
+        <strong>Service:</strong>{" "}
+        {selectedService.serviceName}
+    </p>
+
+    {selectedGroup && (
+        <p>
+            <strong>Type:</strong>{" "}
+            {selectedGroup.groupName}
+        </p>
+    )}
+
+    {selectedSubService && selectedGroup && (
+        <p>
+            <strong>Selected Service:</strong>{" "}
+            {selectedSubService}
+        </p>
+    )}
+
+    {selectedSubService && selectedGroup && (
+        <p>
+            <strong>Price:</strong>{" "}
+            ₹
+            {
+                selectedGroup.subServices.find(
+                    sub => sub.name === selectedSubService
+                )?.price
+            }
+
+             
+        </p>
+        
+    )}
+    {selectedSubService && selectedGroup && (
+    <p>
+        <strong>Duration:</strong>{" "}
+        {
+            selectedGroup.subServices.find(
+                sub => sub.name === selectedSubService
+            )?.duration
+        }{" "}
+        {
+            selectedGroup.subServices.find(
+                sub => sub.name === selectedSubService
+            )?.duration === 1
+                ? selectedGroup.subServices.find(
+                    sub => sub.name === selectedSubService
+                  )?.durationUnit.replace("days", "day")
+                : selectedGroup.subServices.find(
+                    sub => sub.name === selectedSubService
+                  )?.durationUnit
+        }
+    </p>
+)}
+<p className="additional-charge-note">
+    ⚠️ Prices shown are base service charges. Final charges may increase
+    if spare materials, extra work, or additional service requirements
+    are needed. The customer will be informed and approval will be taken
+    before any additional charges.
+</p>
+
+</div>
 <hr />
       <button
         className="book-btn"
@@ -539,11 +623,16 @@ setSelectedProvider(null);
       </button>
 
       <button
-        className="cancel-btn"
-        onClick={() => setSelectedService(null)}
-      >
-        Cancel
-      </button>
+  className="cancel-btn"
+  onClick={() => {
+    setSelectedService(null);
+    setSelectedProvider(null);
+    setSelectedGroup(null);
+    setSelectedSubService(null);
+  }}
+>
+  Cancel
+</button>
 
     </div>
 

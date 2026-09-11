@@ -16,10 +16,10 @@ export default function ProviderReviews() {
 
     const fetchReviews = async () => {
 const providerId = localStorage.getItem("userId");
-console.log("Provider ID:", providerId);
+// console.log("Provider ID:", providerId);
 
-console.log("Review URL:", `/reviews/${providerId}`);
-console.log("Rating URL:", `/reviews/rating/${providerId}`);
+// console.log("Review URL:", `/reviews/${providerId}`);
+// console.log("Rating URL:", `/reviews/rating/${providerId}`);
         try {
 
             const providerId = localStorage.getItem("userId");

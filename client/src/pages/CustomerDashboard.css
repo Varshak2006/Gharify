@@ -328,3 +328,14 @@ background:#1d4ed8;
 .review-card small{
     color:#666;
 }
+.booking-service-details {
+    background: #f8fafc;
+    border-left: 4px solid #2563eb;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 8px;
+}
+
+.booking-service-details p {
+    margin: 5px 0;
+}

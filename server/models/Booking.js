@@ -11,6 +11,13 @@ const bookingSchema=new mongoose.Schema(
             ref:"Service",
             required:true
         },
+        serviceGroup: {
+    type: String
+},
+
+subService: {
+    type: String
+},
         providerId:{
             type:mongoose.Schema.Types.ObjectId,
             ref:"User"
@@ -19,6 +26,9 @@ const bookingSchema=new mongoose.Schema(
             type:Date,
             required:true
         },
+      bookingEndDate:{
+    type:Date
+},  
         address:{
             type:String,
             required:true

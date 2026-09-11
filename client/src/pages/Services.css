@@ -24,7 +24,81 @@
     height:220px;
     object-fit:cover;
 }
+/* Service Group Buttons */
 
+.group-buttons {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0 25px;
+    flex-wrap: wrap;
+}
+
+.group-btn {
+    padding: 12px 22px;
+    border: 2px solid #2563eb;
+    border-radius: 10px;
+    background: white;
+    color: #2563eb;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.group-btn:hover {
+    background: #2563eb;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
+}
+
+
+/* Sub-Service Buttons */
+
+.subservice-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0 25px;
+}
+
+.subservice-btn {
+    padding: 10px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #1f2937;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+/* Selected Service Group */
+
+.selected-group-btn {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+    box-shadow: 0 5px 12px rgba(37, 99, 235, 0.3);
+    transform: translateY(-2px);
+}
+
+
+/* Selected Sub-Service */
+
+.selected-subservice-btn {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+    font-weight: 600;
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+}
+.subservice-btn:hover {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #2563eb;
+    transform: translateY(-1px);
+}
 .card-content{
     padding:20px;
     display:flex;
