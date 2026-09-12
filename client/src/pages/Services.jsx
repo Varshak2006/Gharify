@@ -969,7 +969,7 @@ export default function Services() {
                         <img
                           src={
                             provider.profileImage
-                              ? `http://localhost:5000${provider.profileImage}`
+                             ? `${import.meta.env.VITE_API_URL.replace("/api", "")}${provider.profileImage}`
                               : "/images/default-user.png"
                           }
                           alt={provider.name}
