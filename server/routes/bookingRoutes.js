@@ -2,7 +2,7 @@ const express=require("express");
 const router=express.Router();
 const{createBooking,getmybookings,getAllBookings,acceptBooking,getMyJobs,completeBooking,getAvailableJobs,cancelBooking,getPublicBookingCount, updateTrackingStatus}=require("../controllers/bookingcontroller");
 const protect=require("../middleware/authMiddleware");
-const authorizeRoles=require("../middleware/rolemiddleware");
+const authorizeRoles=require("../middleware/roleMiddleware");
 router.get(
     "/public-count",
     getPublicBookingCount
